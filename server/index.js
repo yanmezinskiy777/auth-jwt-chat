@@ -3,11 +3,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./router/auth");
+const errorMiddleware = require("./middleware/error-middleware");
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api", authRouter);
+app.use(errorMiddleware);
 
 const start = async () => {
   try {
