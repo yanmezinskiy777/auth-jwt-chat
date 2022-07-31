@@ -6,6 +6,10 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const userData = await userService.login(email, password);
+    res.cookie("refreshToken", userData.refreshToken, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
     return res.json(userData);
   } catch (error) {
     next(error);
@@ -43,7 +47,16 @@ const registration = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { refreshToken } = req.cookies;
+    const userData = await userService.refresh(refreshToken);
+    res.cookie("refreshToken", userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+    return res.json(userData);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const activate = async (req, res, next) => {
@@ -55,10 +68,14 @@ const activate = async (req, res, next) => {
     next(error);
   }
 };
+
 const users = async (req, res, next) => {
   try {
-    res.json({ user: "Yan" });
-  } catch (error) {}
+    const users = (await userService.users()) || {};
+    res.json({ users });
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = { login, logout, activate, refresh, registration, users };

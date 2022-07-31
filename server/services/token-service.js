@@ -11,6 +11,15 @@ const saveToken = async (userId, refreshToken) => {
   return token;
 };
 
+const verifyToken = async (token, secretString) => {
+  try {
+    const result = await jwt.verify(token, secretString);
+    return result;
+  } catch (error) {
+    return null;
+  }
+};
+
 const generateToken = async (payload) => {
   const accessToken = await jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
     expiresIn: "30m",
@@ -30,4 +39,15 @@ const removeToken = async (refreshToken) => {
   return result;
 };
 
-module.exports = { generateToken, saveToken, removeToken };
+const findToken = async (refreshToken) => {
+  const result = await TokenModel.findOne({ refreshToken });
+  return result;
+};
+
+module.exports = {
+  generateToken,
+  saveToken,
+  removeToken,
+  findToken,
+  verifyToken,
+};

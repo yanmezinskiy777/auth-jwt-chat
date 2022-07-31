@@ -61,4 +61,31 @@ const logout = async (refreshToken) => {
   return token;
 };
 
-module.exports = { registration, activation, logout, login };
+const refresh = async (refreshToken) => {
+  if (!refreshToken) {
+    throw ApiError.UnauthorizedError("You are not authorized");
+  }
+
+  const user = await tokenService.verifyToken(
+    refreshToken,
+    process.env.JWT_REFRESH_KEY
+  );
+  const dbToken = await tokenService.findToken(refreshToken);
+
+  if (!user || !dbToken) {
+    throw ApiError.UnauthorizedError("You are not authorized");
+  }
+  const findUser = await UserModel.findById(user.id);
+
+  const userData = getUserData(findUser);
+  const tokens = await tokenService.generateToken({ ...userData });
+  await tokenService.saveToken(userData.id, tokens.refreshToken);
+  return { ...tokens, user: userData };
+};
+
+const users = async () => {
+  const users = await UserModel.find();
+  return users;
+};
+
+module.exports = { registration, activation, logout, login, refresh, users };
