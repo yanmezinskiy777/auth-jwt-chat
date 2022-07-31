@@ -3,13 +3,15 @@ const bcrypt = require("bcrypt");
 const uuid = require("uuid");
 const mailService = require("./mail-service");
 const tokenService = require("./token-service");
-const authPaths = require("../router/authPaths");
 const ApiError = require("../exeptions/error");
+const { getUserData } = require("../utils/user");
 
 const registration = async (email, password) => {
   const existUser = await UserModel.findOne({ email });
   if (existUser) {
-    throw ApiError.BadRequest(`User with email address ${email} already exist.`);
+    throw ApiError.BadRequest(
+      `User with email address ${email} already exist.`
+    );
   }
   const link = uuid.v4();
   const hashPassword = await bcrypt.hash(password, 3);
@@ -22,11 +24,7 @@ const registration = async (email, password) => {
     email,
     `${process.env.API_URL}/api/auth/activate/${link}`
   );
-  const userData = {
-    id: user._id,
-    email: user.email,
-    isActivated: user.isActivated,
-  };
+  const userData = getUserData(user);
   const tokens = await tokenService.generateToken({ ...userData });
   await tokenService.saveToken(userData.id, tokens.refreshToken);
   return { ...tokens, user: userData };
@@ -41,4 +39,26 @@ const activation = async (activationLink) => {
   await user.save();
 };
 
-module.exports = { registration, activation };
+const login = async (email, password) => {
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    throw ApiError.BadRequest(
+      `The user with the email(${email}) address does not exist.`
+    );
+  }
+  const isEqual = await bcrypt.compare(password, user.password);
+  if (!isEqual) {
+    throw ApiError.BadRequest(`The credentials is wrong`);
+  }
+  const userData = getUserData(user);
+  const tokens = await tokenService.generateToken({ ...userData });
+  await tokenService.saveToken(userData.id, tokens.refreshToken);
+  return { ...tokens, user: userData };
+};
+
+const logout = async (refreshToken) => {
+  const token = await tokenService.removeToken(refreshToken);
+  return token;
+};
+
+module.exports = { registration, activation, logout, login };

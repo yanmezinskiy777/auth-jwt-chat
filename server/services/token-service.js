@@ -25,4 +25,9 @@ const generateToken = async (payload) => {
   };
 };
 
-module.exports = { generateToken, saveToken };
+const removeToken = async (refreshToken) => {
+  const result = await TokenModel.remove({ refreshToken });
+  return result;
+};
+
+module.exports = { generateToken, saveToken, removeToken };
