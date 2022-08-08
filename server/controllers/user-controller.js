@@ -47,7 +47,7 @@ const registration = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
   try {
-    const { refreshToken } = req.cookies;
+    const refreshToken = req.cookies['refreshToken'];
     const userData = await userService.refresh(refreshToken);
     res.cookie("refreshToken", userData.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -60,7 +60,7 @@ const refresh = async (req, res, next) => {
 };
 
 const activate = async (req, res, next) => {
-  try {
+  try { 
     const activationLink = req.params.link;
     await userService.activation(activationLink);
     return res.redirect(process.env.CLIENT_URL);

@@ -4,8 +4,8 @@ export interface AuthResponse {
   user: IUser;
 }
 
-interface IUser {
+export interface IUser {
   id: string;
   email: string;
-  isActivated: string;
+  isActivated: boolean;
 }

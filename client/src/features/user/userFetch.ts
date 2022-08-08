@@ -1,11 +1,30 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios";
-import { AuthResponse } from "../../models/AuthResponse";
-import { registration } from "../../services/AuthService";
+import {
+  checkAuth,
+  login,
+  logout,
+  registration,
+} from "../../services/AuthService";
+
+interface IFetch {
+  email: string;
+  password: string;
+}
 
 const fetchRegistration = createAsyncThunk(
   "user/fetchRegistration",
-  ({ email, password }: any) => registration(email, password)
+  ({ email, password }: IFetch) => registration(email, password)
 );
 
-export { fetchRegistration };
+const fetchLogin = createAsyncThunk(
+  "user/fetchLogin",
+  ({ email, password }: IFetch) => login(email, password)
+);
+
+const fetchLogout = createAsyncThunk("user/fetchLogout", () => logout());
+
+const fetchCheckAuth = createAsyncThunk("user/fetchCheckAuth", () =>
+  checkAuth()
+);
+
+export { fetchRegistration, fetchLogin, fetchLogout, fetchCheckAuth };
