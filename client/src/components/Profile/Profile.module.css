@@ -1,0 +1,6 @@
+.profile{
+    display: flex;
+}
+.profile button{
+    margin-left: 20px;
+}

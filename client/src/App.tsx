@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 import { useTypedDispatch, useTypedSelector } from "./app/store";
-import Form from "./components/Form";
-import Profile from "./components/Profile";
+import Form from "./components/Form/Form";
+import Profile from "./components/Profile/Profile";
 import { fetchCheckAuth } from "./features/user/userFetch";
+import styles from "./styles/App.module.css"
 
 function App() {
   const dispatch = useTypedDispatch();
@@ -19,13 +20,8 @@ function App() {
   return (
     <Container>
       <Row>
-        <Col>
-          {isAuth && <Profile/>}
-        </Col>
-      </Row>
-      <Row>
-        <Col md="4">
-          {!isAuth && <Form />}
+        <Col className={styles.wrapper}>
+          {isAuth ? <Profile/> :  <Form />}
         </Col>
       </Row>
     </Container>

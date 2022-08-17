@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
-import { useTypedDispatch } from "../app/store";
-import { fetchLogin, fetchRegistration } from "../features/user/userFetch";
+import { useTypedDispatch } from "../../app/store";
+import { fetchLogin, fetchRegistration } from "../../features/user/userFetch";
+import styles from "./Form.module.css"
 
 type InputEvent = React.ChangeEvent<HTMLInputElement>;
 
@@ -17,7 +18,10 @@ const From = () => {
   const handlerSignIn = () => dispatch(fetchLogin({ email, password }));
 
   return (
-    <Form>
+    <Form className={styles.form}>
+      <FormGroup className={styles.slogan}>
+        <h1>Welcome to chat!</h1>
+      </FormGroup>
       <FormGroup>
         <Label for="exampleEmail">Email</Label>
         <Input
@@ -40,11 +44,9 @@ const From = () => {
           value={password}
         />
       </FormGroup>
-      <FormGroup>
-        <Button onClick={handlerSignUp}>Sign up</Button>
-      </FormGroup>
-      <FormGroup>
-        <Button onClick={handlerSignIn}>Sign in</Button>
+      <FormGroup className={styles.btns}>
+        <Button color="primary" onClick={handlerSignUp}>Sign up</Button>
+        <Button color="success" onClick={handlerSignIn}>Sign in</Button>
       </FormGroup>
     </Form>
   );
